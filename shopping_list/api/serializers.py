@@ -12,36 +12,37 @@ class UserSerializer(serializers.ModelSerializer):  # NEW!
         fields = ["id", "username"]
 
 
-class ShoppingItemSerializer(serializers.ModelSerializer):
 
+class ShoppingItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = ShoppingItem
-        fields = ['id', 'name', 'purchased']
-        # extra_kwargs = {
-        #     'shopping_list': {'write_only': True},  # Asegúrate de que este campo solo se use para escribir
-        # }
-        read_only_fields = ('id', )
+        fields = ["id", "name", "purchased", "shopping_list"]
+
+        read_only_fields = ("id", "shopping_list")
 
     def create(self, validated_data, **kwargs):
-        validated_data['shopping_list_id'] = self.context['request'].parser_context['kwargs']['pk']
-        return super(ShoppingItemSerializer, self).create(validated_data)
+        validated_data["shopping_list_id"] = self.context["request"].parser_context[
+            "kwargs"
+        ]["pk"]
 
+        if ShoppingList.objects.get(
+            id=self.context["request"].parser_context["kwargs"]["pk"]
+        ).shopping_items.filter(name=validated_data["name"], purchased=False):
+            raise serializers.ValidationError("There's already this item on the list")
+
+        return super(ShoppingItemSerializer, self).create(validated_data)
+    
 
 class ShoppingListSerializer(serializers.ModelSerializer):
-    shopping_items = ShoppingItemSerializer(many=True, read_only=True)
-    members = UserSerializer(many=True, read_only=True)  # NEW!
+    members = UserSerializer(many=True, read_only=True)
+    unpurchased_items = serializers.SerializerMethodField()
 
     class Meta:
         model = ShoppingList
-        fields = ["id", "name", "shopping_items", "members"]  # UPDATED!
+        fields = ["id", "name", "unpurchased_items", "members"]
 
-    # def create(self, validated_data):
-    #     items_data = validated_data.pop('shopping_items',[])
-    #     shopping_list = ShoppingList.objects.create(**validated_data)
-    #
-    #     for item_data in items_data:
-    #         ShoppingItem.objects.create(shopping_list=shopping_list, **item_data)
-    #     return shopping_list
+    def get_unpurchased_items(self, obj):
+        return [{"name": shopping_item.name} for shopping_item in obj.shopping_items.filter(purchased=False)][:3]
 
 
 
