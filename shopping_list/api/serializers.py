@@ -6,8 +6,10 @@ from rest_framework import serializers
 
 from shopping_list.models import ShoppingItem, ShoppingList, User
 
+
 class UnpurchasedItem(TypedDict):  # NEW
     name: str
+
 
 class UserSerializer(serializers.ModelSerializer):  # NEW!
     class Meta:
@@ -33,7 +35,7 @@ class ShoppingItemSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("There's already this item on the list")
 
         return super(ShoppingItemSerializer, self).create(validated_data)
-    
+
 
 class ShoppingListSerializer(serializers.ModelSerializer):
     members = UserSerializer(many=True, read_only=True)

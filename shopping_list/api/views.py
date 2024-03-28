@@ -1,11 +1,10 @@
 # shopping_list/api/views.py
 
 
+from drf_spectacular.utils import extend_schema
+from rest_framework import filters, generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import filters, generics, status
-
-from drf_spectacular.utils import extend_schema
 
 from shopping_list.api.pagination import LargerResultsSetPagination
 from shopping_list.api.permissions import (
@@ -13,15 +12,19 @@ from shopping_list.api.permissions import (
     ShoppingItemShoppingListMembersOnly,
     ShoppingListMembersOnly,
 )
-from shopping_list.api.serializers import ShoppingItemSerializer, ShoppingListSerializer, AddMemberSerializer, \
-    RemoveMemberSerializer
+from shopping_list.api.serializers import (
+    AddMemberSerializer,
+    RemoveMemberSerializer,
+    ShoppingItemSerializer,
+    ShoppingListSerializer,
+)
 from shopping_list.models import ShoppingItem, ShoppingList
 
 
 class ListAddShoppingList(generics.ListCreateAPIView):
     """
-        Returns the list of all shopping lists user is a member of. Each shopping list includes a few unpurchased shopping items.
-        Users can add a new shopping list.
+        Returns the list of all shopping lists user is a member of. Each shopping list includes a few unpurchased
+        shopping items. Users can add a new shopping list.
     """
     serializer_class = ShoppingListSerializer
 

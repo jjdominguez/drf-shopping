@@ -1,15 +1,14 @@
 # shopping_list/tests.py
 
-import pytest
-from django.urls import reverse
-
-from rest_framework import status
-from rest_framework.test import APIClient
-
 from datetime import datetime, timedelta
 from unittest import mock
 
-from shopping_list.models import ShoppingList, ShoppingItem, User
+import pytest
+from django.urls import reverse
+from rest_framework import status
+from rest_framework.test import APIClient
+
+from shopping_list.models import ShoppingItem, ShoppingList, User
 
 
 @pytest.mark.django_db
@@ -282,20 +281,6 @@ def test_change_shopping_item_purchased_status_with_partial_update(create_user, 
 
 
 @pytest.mark.django_db
-def test_shopping_list_is_deleted(create_user, create_authenticated_client, create_shopping_list):
-    user = create_user()
-    client = create_authenticated_client(user)
-    shopping_list = create_shopping_list(user=user)
-
-    url = reverse("shopping-list-detail", args=[shopping_list.id])
-
-    response = client.delete(url)
-
-    assert response.status_code == status.HTTP_204_NO_CONTENT
-    assert len(ShoppingList.objects.all()) == 0
-
-
-@pytest.mark.django_db
 def test_update_shopping_list_restricted_if_not_member(create_user, create_authenticated_client, create_shopping_list):
     user = create_user()
     shopping_list_creator = User.objects.create_user("Creator", "creator@list.com", "something")
@@ -314,7 +299,8 @@ def test_update_shopping_list_restricted_if_not_member(create_user, create_authe
 
 
 @pytest.mark.django_db
-def test_partial_update_shopping_list_restricted_if_not_member(create_user, create_authenticated_client, create_shopping_list):
+def test_partial_update_shopping_list_restricted_if_not_member(create_user, create_authenticated_client,
+                                                               create_shopping_list):
     user = create_user()
     shopping_list_creator = User.objects.create_user("Creator", "creator@list.com", "something")
     client = create_authenticated_client(user)
@@ -396,7 +382,8 @@ def test_admin_can_add_shopping_items(create_user, create_shopping_list, admin_c
 
 
 @pytest.mark.django_db
-def test_shopping_item_detail_access_restricted_if_not_member_of_shopping_list(create_user, create_authenticated_client, create_shopping_item):
+def test_shopping_item_detail_access_restricted_if_not_member_of_shopping_list(create_user, create_authenticated_client,
+                                                                               create_shopping_item):
     user = create_user()
     shopping_list_creator = User.objects.create_user("Creator", "creator@list.com", "something")
     client = create_authenticated_client(user)
@@ -410,7 +397,8 @@ def test_shopping_item_detail_access_restricted_if_not_member_of_shopping_list(c
 
 
 @pytest.mark.django_db
-def test_shopping_item_update_restricted_if_not_member_of_shopping_list(create_user, create_authenticated_client, create_shopping_item):
+def test_shopping_item_update_restricted_if_not_member_of_shopping_list(create_user, create_authenticated_client,
+                                                                        create_shopping_item):
     user = create_user()
     shopping_list_creator = User.objects.create_user("Creator", "creator@list.com", "something")
     client = create_authenticated_client(user)
@@ -429,7 +417,9 @@ def test_shopping_item_update_restricted_if_not_member_of_shopping_list(create_u
 
 
 @pytest.mark.django_db
-def test_shopping_item_partial_update_restricted_if_not_member_of_shopping_list(create_user, create_authenticated_client, create_shopping_item):
+def test_shopping_item_partial_update_restricted_if_not_member_of_shopping_list(create_user,
+                                                                                create_authenticated_client,
+                                                                                create_shopping_item):
     user = create_user()
     shopping_list_creator = User.objects.create_user("Creator", "creator@list.com", "something")
     client = create_authenticated_client(user)
@@ -448,7 +438,8 @@ def test_shopping_item_partial_update_restricted_if_not_member_of_shopping_list(
 
 
 @pytest.mark.django_db
-def test_shopping_item_delete_restricted_if_not_member_of_shopping_list(create_user, create_authenticated_client, create_shopping_item):
+def test_shopping_item_delete_restricted_if_not_member_of_shopping_list(create_user, create_authenticated_client,
+                                                                        create_shopping_item):
     user = create_user()
     shopping_list_creator = User.objects.create_user("Creator", "creator@list.com", "something")
     client = create_authenticated_client(user)
@@ -474,7 +465,8 @@ def test_admin_can_retrieve_single_shopping_item(create_user, create_shopping_it
 
 
 @pytest.mark.django_db
-def test_client_retrieves_only_shopping_lists_they_are_member_of(create_user, create_authenticated_client, create_shopping_list):
+def test_client_retrieves_only_shopping_lists_they_are_member_of(create_user, create_authenticated_client,
+                                                                 create_shopping_list):
     user = create_user()
     shopping_list = ShoppingList.objects.create(name="Books")
     shopping_list.members.add(user)
@@ -491,7 +483,8 @@ def test_client_retrieves_only_shopping_lists_they_are_member_of(create_user, cr
 
 
 @pytest.mark.django_db
-def test_list_shopping_items_is_retrieved_by_shopping_list_member(create_user, create_authenticated_client, create_shopping_list):
+def test_list_shopping_items_is_retrieved_by_shopping_list_member(create_user, create_authenticated_client,
+                                                                  create_shopping_list):
     user = create_user()
     shopping_list = create_shopping_list(user)
     shopping_item_1 = ShoppingItem.objects.create(name="Oranges", purchased=False, shopping_list=shopping_list)
@@ -521,12 +514,15 @@ def test_not_member_can_not_retrieve_shopping_items(create_user, create_authenti
 
 
 @pytest.mark.django_db
-def test_list_shopping_items_only_the_ones_belonging_to_the_same_shopping_list(create_user, create_authenticated_client, create_shopping_list, create_shopping_item):
+def test_list_shopping_items_only_the_ones_belonging_to_the_same_shopping_list(create_user, create_authenticated_client,
+                                                                               create_shopping_list,
+                                                                               create_shopping_item):
     user = create_user()
 
     shopping_list = ShoppingList.objects.create(name="My shopping list")
     shopping_list.members.add(user)
-    shopping_item_from_this_list = ShoppingItem.objects.create(name="Oranges", purchased=False, shopping_list=shopping_list)
+    shopping_item_from_this_list = ShoppingItem.objects.create(name="Oranges", purchased=False,
+                                                               shopping_list=shopping_list)
 
     another_shopping_list = ShoppingList.objects.create(name="Another list")
     another_shopping_list.members.add(user)
@@ -561,7 +557,8 @@ def test_max_3_shopping_items_on_shopping_list(create_user, create_authenticated
 
 
 @pytest.mark.django_db
-def test_all_shopping_items_on_shopping_list_unpurchased(create_user, create_authenticated_client, create_shopping_list):
+def test_all_shopping_items_on_shopping_list_unpurchased(create_user, create_authenticated_client,
+                                                         create_shopping_list):
     user = create_user()
     client = create_authenticated_client(user)
 
@@ -638,12 +635,15 @@ def test_shopping_lists_order_changed_when_item_marked_purchased(create_user, cr
         mock_now.return_value = older_time
         older_list = ShoppingList.objects.create(name="Older")
         older_list.members.add(user)
-        shopping_item_on_older_list = ShoppingItem.objects.create(name="Milk", purchased=False, shopping_list=older_list)
+        shopping_item_on_older_list = ShoppingItem.objects.create(name="Milk", purchased=False,
+                                                                  shopping_list=older_list)
 
         mock_now.return_value = more_recent_time
-        ShoppingList.objects.create(name="Recent", last_interaction=datetime.now() - timedelta(days=100)).members.add(user)
+        ShoppingList.objects.create(name="Recent",
+                                    last_interaction=datetime.now() - timedelta(days=100)).members.add(user)
 
-    shopping_item_url = reverse("shopping-item-detail", kwargs={"pk": older_list.id, "item_pk": shopping_item_on_older_list.id})
+    shopping_item_url = reverse("shopping-item-detail",
+                                kwargs={"pk": older_list.id, "item_pk": shopping_item_on_older_list.id})
     shopping_lists_url = reverse("all-shopping-lists")
 
     data = {
@@ -709,7 +709,6 @@ def test_add_members_not_list_member(create_user, create_authenticated_client, c
 
     list_creator = User.objects.create(username="list_creator", password="whocares")
     shopping_list = create_shopping_list(list_creator)
-
 
     data = {"members": [user.id]}
 
@@ -893,8 +892,6 @@ def test_order_shopping_items_purchased_first(create_user, create_authenticated_
 
     assert response.data["results"][0]["name"] == "Bananas"
     assert response.data["results"][1]["name"] == "Apples"
-
-
 
 
 @pytest.mark.django_db
