@@ -39,8 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
-    'shopping_list',
     'corsheaders',
+    'shopping_list',
+    'drf_spectacular'
 ]
 
 MIDDLEWARE = [
@@ -149,9 +150,20 @@ REST_FRAMEWORK = {
         "user_day": "10000/day",
         "user_minute": "200/minute",
     },
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
+    ],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 AUTH_USER_MODEL = "shopping_list.User"
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "My Awesome API",
+    "DESCRIPTION": "Multiple shopping lists to never forget anything anymore.",
+    "VERSION": "1.0.0",
+    "SERVE_PERMISSIONS": ["rest_framework.permissions.IsAuthenticated"],
+}
 
 # REST_FRAMEWORK = {
 #     'DEFAULT_RENDERER_CLASSES': [
