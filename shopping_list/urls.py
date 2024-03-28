@@ -5,10 +5,11 @@ from django.urls import include, path
 from rest_framework.authtoken.views import obtain_auth_token  # NEW
 
 from shopping_list.api.views import ListAddShoppingItem, ListAddShoppingList, ShoppingItemDetail, ShoppingListDetail,\
-    ShoppingListAddMembers, ShoppingListRemoveMembers
+    ShoppingListAddMembers, ShoppingListRemoveMembers, SearchShoppingItems
 
 urlpatterns = [
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),  # NEW!
+    path('api/search-shopping-items/', SearchShoppingItems.as_view(), name="search-shopping-items"),  # NEW
     path("api-token-auth/", obtain_auth_token, name="api_token_auth"),  # NEW
     path("api/shopping-lists/", ListAddShoppingList.as_view(), name="all-shopping-lists"),
     path("api/shopping-lists/<uuid:pk>/", ShoppingListDetail.as_view(), name="shopping-list-detail"),
