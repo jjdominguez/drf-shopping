@@ -288,7 +288,7 @@
     }
   },
   {
-    "model": "auth.user",
+    "model": "shopping_list.user",
     "pk": 1,
     "fields": {
       "password": "pbkdf2_sha256$320000$tMxZLe1sCUrSSiGSLrZjAJ$/ETFN4aY2GPJaG94HOdA333MnOWr00djZeGRhLHMhnw=",
@@ -306,7 +306,7 @@
     }
   },
   {
-    "model": "auth.user",
+    "model": "shopping_list.user",
     "pk": 2,
     "fields": {
       "password": "pbkdf2_sha256$320000$U3rBtMRkTZflz5oPTSgLfy$SniyqW+9SmkvpI3/rTK0xycyDQ8JSyZ/Ub5w5ZoRono=",
@@ -324,7 +324,7 @@
     }
   },
   {
-    "model": "auth.user",
+    "model": "shopping_list.user",
     "pk": 3,
     "fields": {
       "password": "pbkdf2_sha256$320000$9lW0428NU5n20PQ0SNMQcJ$gnldmTq5iKEENOtbHwa0PQLwS4PIbs07B6Niri4tcMM=",

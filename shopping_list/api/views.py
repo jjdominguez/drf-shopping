@@ -1,7 +1,9 @@
 # shopping_list/api/views.py
 
 
-from rest_framework import generics
+from rest_framework import generics, status
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from shopping_list.api.pagination import LargerResultsSetPagination
 from shopping_list.api.permissions import (
@@ -9,11 +11,10 @@ from shopping_list.api.permissions import (
     ShoppingItemShoppingListMembersOnly,
     ShoppingListMembersOnly,
 )
-from shopping_list.api.serializers import ShoppingItemSerializer, ShoppingListSerializer
+from shopping_list.api.serializers import ShoppingItemSerializer, ShoppingListSerializer, AddMemberSerializer, \
+    RemoveMemberSerializer
 from shopping_list.models import ShoppingItem, ShoppingList
 
-
-# shopping_list/api/views.py
 
 class ListAddShoppingList(generics.ListCreateAPIView):
     serializer_class = ShoppingListSerializer
@@ -36,6 +37,7 @@ class ListAddShoppingItem(generics.ListCreateAPIView):
 
         return queryset
 
+
 class ShoppingListDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = ShoppingList.objects.all()
     serializer_class = ShoppingListSerializer
@@ -54,3 +56,33 @@ class ShoppingItemDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ShoppingItemSerializer
     permission_classes = [ShoppingItemShoppingListMembersOnly]
     lookup_url_kwarg = "item_pk"
+
+
+class ShoppingListAddMembers(APIView):
+    permission_classes = [ShoppingListMembersOnly]
+
+    def put(self, request, pk, format=None):
+        shopping_list = ShoppingList.objects.get(pk=pk)
+        serializer = AddMemberSerializer(shopping_list, data=request.data)
+        self.check_object_permissions(request, shopping_list)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ShoppingListRemoveMembers(APIView):
+    permission_classes = [ShoppingListMembersOnly]
+
+    def put(self, request, pk, format=None):
+        shopping_list = ShoppingList.objects.get(pk=pk)
+        serializer = RemoveMemberSerializer(shopping_list, data=request.data)
+        self.check_object_permissions(request, shopping_list)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

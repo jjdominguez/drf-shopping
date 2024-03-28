@@ -1,16 +1,14 @@
 # shopping_list/api/serializers.py
 
-from django.contrib.auth.models import User  # NEW!
 from rest_framework import serializers
 
-from shopping_list.models import ShoppingItem, ShoppingList
+from shopping_list.models import ShoppingItem, ShoppingList, User
 
 
 class UserSerializer(serializers.ModelSerializer):  # NEW!
     class Meta:
         model = User
         fields = ["id", "username"]
-
 
 
 class ShoppingItemSerializer(serializers.ModelSerializer):
@@ -39,12 +37,33 @@ class ShoppingListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ShoppingList
-        fields = ["id", "name", "unpurchased_items", "members"]
+        fields = ["id", "name", "unpurchased_items", "members", "last_interaction"]
 
     def get_unpurchased_items(self, obj):
         return [{"name": shopping_item.name} for shopping_item in obj.shopping_items.filter(purchased=False)][:3]
 
 
+class AddMemberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ShoppingList
+        fields = ["members"]
+
+    def update(self, instance, validated_data):
+        for member in validated_data["members"]:
+            instance.members.add(member)
+            instance.save()
+
+        return instance
 
 
+class RemoveMemberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ShoppingList
+        fields = ["members"]
 
+    def update(self, instance, validated_data):
+        for member in validated_data["members"]:
+            instance.members.remove(member)
+            instance.save()
+
+        return instance
